@@ -1,22 +1,30 @@
 #!/bin/sh /etc/rc.common
 
-# سرویس‌دهنده (init script) برای اجرای خودکار اسکریپت کنترلر LED
-# این فایل مسئول اجرای اسکریپت در زمان بوت و متوقف کردن آن در زمان خاموشی است.
+# ==================================================================
+# فایل سرویس (init) برای مدیریت اسکریپت کنترلر LED
+# وظیفه: اجرای اسکریپت در زمان بوت و توقف صحیح آن در زمان خاموشی
+# ==================================================================
 
-START=99  # اولویت اجرا در زمان بوت (مقدار بالا یعنی دیرتر اجرا شود)
-STOP=15   # اولویت توقف در زمان خاموشی
+# اولویت اجرا در زمان بوت (مقدار بالا یعنی دیرتر و پس از آماده شدن شبکه اجرا شود)
+START=99
+# اولویت توقف در زمان خاموشی
+STOP=15
 
-SERVICE_PID_FILE="/var/run/internet_led_status.pid"
+# مسیر فایل اسکریپت اصلی
 SERVICE_SCRIPT="/usr/bin/internet_led_status.sh"
+# فایلی برای ذخیره شماره پروسه (PID) اسکریپت در حال اجرا
+SERVICE_PID_FILE="/var/run/internet_led_status.pid"
 
+# تابع start: در زمان بوت یا با دستور start اجرا می‌شود
 start() {
-    echo "Starting Internet LED Status service"
-    # اجرای اسکریپت در پس‌زمینه و ذخیره PID آن برای مدیریت بهتر
+    echo "Starting Internet LED Controller Service..."
+    # اجرای اسکریپت در پس‌زمینه (background) با ابزار استاندارد start-stop-daemon
     start-stop-daemon -S -b -m -p "$SERVICE_PID_FILE" -x "$SERVICE_SCRIPT"
 }
 
+# تابع stop: در زمان خاموشی یا با دستور stop اجرا می‌شود
 stop() {
-    echo "Stopping Internet LED Status service"
-    # توقف اسکریپت در حال اجرا با استفاده از PID فایل
+    echo "Stopping Internet LED Controller Service..."
+    # توقف اسکریپت در حال اجرا با استفاده از PID فایل آن
     start-stop-daemon -K -q -p "$SERVICE_PID_FILE"
 }
