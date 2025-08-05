@@ -16,18 +16,12 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
-# ====================================================================
-#  <<<<<<<<<<<<<<<<<<<<<<   تغییر کلیدی اینجاست   >>>>>>>>>>>>>>>>>>>>
-#
-# Clear the shell's command path cache.
-# This forces the shell to find the new, full-featured wget binary.
-hash -r
-#
-# ====================================================================
+# Define the full path for the newly installed wget
+# This is the most reliable way to call it after installation.
+WGET_FULL_PATH="/usr/bin/wget"
 
 echo "Dependencies are satisfied."
 echo "----------------------------------------"
-
 
 # --- Step 2: Main Installation ---
 # Repository variables
@@ -45,9 +39,15 @@ SCRIPT_PATH="/usr/bin/internet_led_status.sh"
 
 echo "Starting the Smart LED Controller installation..."
 
-# Download the service file using the now-installed full wget
+# ====================================================================
+#  <<<<<<<<<<<<<<<<<<<<<<   تغییر کلیدی اینجاست   >>>>>>>>>>>>>>>>>>>>
+#
+# Call wget using its full, absolute path to bypass shell caching issues.
+# ====================================================================
+
+# Download the service file
 echo "-> Downloading the service file..."
-wget -q "$SERVICE_FILE_URL" -O "$SERVICE_PATH"
+$WGET_FULL_PATH -q "$SERVICE_FILE_URL" -O "$SERVICE_PATH"
 if [ "$?" -ne 0 ]; then
     echo "Error downloading the service file."
     exit 1
@@ -55,7 +55,7 @@ fi
 
 # Download the main script
 echo "-> Downloading the main script..."
-wget -q "$SCRIPT_FILE_URL" -O "$SCRIPT_PATH"
+$WGET_FULL_PATH -q "$SCRIPT_FILE_URL" -O "$SCRIPT_PATH"
 if [ "$?" -ne 0 ]; then
     echo "Error downloading the main script."
     exit 1
@@ -72,5 +72,5 @@ $SERVICE_PATH start
 echo ""
 echo "Installation completed successfully!"
 echo "The LED controller script is now active."
-echo "For customization (like changing LED names), edit the file: $SCRIPT_PATH"
+echo "For customization, edit: $SCRIPT_PATH"
 echo "Then, restart the service with: /etc/init.d/internet_led restart"
