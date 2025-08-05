@@ -9,7 +9,7 @@
 # --- بخش تنظیمات ---
 # آدرس ریپازیتوری گیت‌هاب خود را در اینجا وارد کنید.
 # ** این بخش را حتما با اطلاعات خودتان ویرایش کنید! **
-GITHUB_REPO="YourUsername/YourRepoName"
+GITHUB_REPO="Pezhman5252/openwrt-led-script"
 BRANCH="main" # یا "master" بسته به نام شاخه اصلی شما
 
 # آدرس کامل فایل‌ها در گیت‌هاب
