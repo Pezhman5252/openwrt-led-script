@@ -2,11 +2,12 @@
 
 # ===================================================================================
 # اسکریپت حرفه‌ای کنترلر LED وضعیت اینترنت برای OpenWrt
-# نسخه 5.1 - نهایی (رنگ زرد برای وضعیت پایدار)
+# نسخه 5.2 - نهایی (با منطق اصلاح شده برای تعویض رنگ قرمز/زرد)
 #
 # عملکرد:
-# - در صورت اتصال کامل، چراغ زرد را به صورت ثابت و با نور ملایم روشن می‌کند.
-# - در صورت بروز هرگونه مشکل، چراغ قرمز را روشن می‌کند.
+# - در صورت اتصال کامل، چراغ زرد (قرمز+سبز) را به صورت ثابت روشن می‌کند.
+# - در صورت بروز هرگونه مشکل، چراغ قرمز خالص را روشن می‌کند.
+# - منطق تعویض رنگ به طور کامل بازنویسی و اشکال‌زدایی شده است.
 # ===================================================================================
 
 # --- بخش تنظیمات (Configuration) ---
@@ -26,20 +27,20 @@ BRIGHTNESS_LEVEL=50
 # فاصله زمانی بین هر بررسی (به ثانیه).
 SLEEP_INTERVAL=15
 
-# --- توابع کنترل LED ---
+# --- توابع کنترل LED (بدون تغییر) ---
 
 # تابع روشن کردن چراغ زرد خالص (ترکیب قرمز و سبز)
 set_led_yellow() {
-    echo 0 > "/sys/class/leds/$LED_BLUE/brightness"     # اطمینان از خاموش بودن آبی
-    echo "$BRIGHTNESS_LEVEL" > "/sys/class/leds/$LED_RED/brightness"      # روشن کردن قرمز
-    echo "$BRIGHTNESS_LEVEL" > "/sys/class/leds/$LED_GREEN/brightness" # روشن کردن سبز
+    echo 0 > "/sys/class/leds/$LED_BLUE/brightness"
+    echo "$BRIGHTNESS_LEVEL" > "/sys/class/leds/$LED_RED/brightness"
+    echo "$BRIGHTNESS_LEVEL" > "/sys/class/leds/$LED_GREEN/brightness"
 }
 
 # تابع روشن کردن چراغ قرمز خالص
 set_led_red() {
-    echo 0 > "/sys/class/leds/$LED_GREEN/brightness"    # اطمینان از خاموش بودن سبز
-    echo 0 > "/sys/class/leds/$LED_BLUE/brightness"     # اطمینان از خاموش بودن آبی
-    echo "$BRIGHTNESS_LEVEL" > "/sys/class/leds/$LED_RED/brightness"  # روشن کردن قرمز
+    echo 0 > "/sys/class/leds/$LED_GREEN/brightness"
+    echo 0 > "/sys/class/leds/$LED_BLUE/brightness"
+    echo "$BRIGHTNESS_LEVEL" > "/sys/class/leds/$LED_RED/brightness"
 }
 
 # --- حلقه اصلی برنامه (Main Loop) ---
@@ -47,9 +48,9 @@ log() {
     logger -t "InternetLED" "$1"
 }
 
-log "اسکریپت کنترلر LED (رنگ زرد) با موفقیت آغاز به کار کرد."
+log "اسکریپت کنترلر LED (قرمز/زرد) با منطق جدید آغاز به کار کرد."
 
-# در ابتدای کار، یک بار تمام چراغ‌ها را خاموش می‌کنیم.
+# اطمینان از خاموش بودن همه چراغ‌ها در ابتدای کار
 echo 0 > "/sys/class/leds/$LED_GREEN/brightness"
 echo 0 > "/sys/class/leds/$LED_RED/brightness"
 echo 0 > "/sys/class/leds/$LED_BLUE/brightness"
@@ -71,17 +72,18 @@ while true; do
         captive_portal_ok=1
     fi
 
-    # --- تصمیم‌گیری نهایی ---
+    # --- بخش تصمیم‌گیری نهایی با منطق اصلاح‌شده ---
     if [ "$ping_ok" -eq 1 ] && [ "$dns_ok" -eq 1 ] && [ "$captive_portal_ok" -eq 1 ]; then
-        # وضعیت: اینترنت برقرار است.
-        # برای جلوگیری از نوشتن‌های بی‌دلیل، تنها در صورتی چراغ را زرد می‌کنیم که از قبل در حالت قرمز (یعنی سبز خاموش) باشد.
+        # وضعیت: اینترنت برقرار است. باید رنگ زرد نمایش داده شود.
+        # شاخص ما چراغ سبز است. اگر خاموش باشد، یعنی وضعیت فعلی قرمز است و باید به زرد تغییر کند.
         if [ "$(cat /sys/class/leds/$LED_GREEN/brightness)" -eq 0 ]; then
             log "وضعیت اینترنت: پایدار. تغییر رنگ به زرد."
-            set_led_yellow # <-- فراخوانی تابع جدید
+            set_led_yellow
         fi
     else
-        # وضعیت: اینترنت قطع است.
-        if [ "$(cat /sys/class/leds/$LED_RED/brightness)" -eq 0 ]; then
+        # وضعیت: اینترنت قطع است. باید رنگ قرمز نمایش داده شود.
+        # اگر چراغ سبز روشن باشد، یعنی وضعیت فعلی زرد است و باید به قرمز تغییر کند.
+        if [ "$(cat /sys/class/leds/$LED_GREEN/brightness)" -ne 0 ]; then
             log "وضعیت اینترنت: قطع. Ping=$ping_ok, DNS=$dns_ok, Portal=$captive_portal_ok. تغییر رنگ به قرمز."
             set_led_red
         fi
