@@ -8,12 +8,7 @@ fi
 
 # --- Step 1: Dependency Check and Installation ---
 echo "Checking and installing required packages (wget-ssl, ca-bundle)..."
-
-# First, update the package list.
 opkg update
-
-# Install packages needed for secure HTTPS downloads.
-# This makes the rest of the script robust.
 opkg install wget-ssl ca-bundle
 if [ "$?" -ne 0 ]; then
     echo "Error: Failed to install required packages."
@@ -21,12 +16,20 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
+# ====================================================================
+#  <<<<<<<<<<<<<<<<<<<<<<   تغییر کلیدی اینجاست   >>>>>>>>>>>>>>>>>>>>
+#
+# Clear the shell's command path cache.
+# This forces the shell to find the new, full-featured wget binary.
+hash -r
+#
+# ====================================================================
+
 echo "Dependencies are satisfied."
 echo "----------------------------------------"
 
 
 # --- Step 2: Main Installation ---
-
 # Repository variables
 REPO_USER="Pezhman5252"
 REPO_NAME="openwrt-led-script"
