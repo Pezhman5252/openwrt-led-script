@@ -6,26 +6,47 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+# --- Step 1: Dependency Check and Installation ---
+echo "Checking and installing required packages (wget-ssl, ca-bundle)..."
+
+# First, update the package list.
+opkg update
+
+# Install packages needed for secure HTTPS downloads.
+# This makes the rest of the script robust.
+opkg install wget-ssl ca-bundle
+if [ "$?" -ne 0 ]; then
+    echo "Error: Failed to install required packages."
+    echo "Please check your internet connection and opkg configuration."
+    exit 1
+fi
+
+echo "Dependencies are satisfied."
+echo "----------------------------------------"
+
+
+# --- Step 2: Main Installation ---
+
 # Repository variables
 REPO_USER="Pezhman5252"
 REPO_NAME="openwrt-led-script"
-BRANCH="main" # Or "master", depending on your default branch name
+BRANCH="main"
 
-# File URLs in the repository
+# File URLs
 SERVICE_FILE_URL="https://raw.githubusercontent.com/$REPO_USER/$REPO_NAME/$BRANCH/files/etc/init.d/internet_led"
 SCRIPT_FILE_URL="https://raw.githubusercontent.com/$REPO_USER/$REPO_NAME/$BRANCH/files/usr/bin/internet_led_status.sh"
 
-# Installation paths on the router
+# Installation paths
 SERVICE_PATH="/etc/init.d/internet_led"
 SCRIPT_PATH="/usr/bin/internet_led_status.sh"
 
-echo "Starting the Smart LED Controller installation process..."
+echo "Starting the Smart LED Controller installation..."
 
-# Download the service file
+# Download the service file using the now-installed full wget
 echo "-> Downloading the service file..."
 wget -q "$SERVICE_FILE_URL" -O "$SERVICE_PATH"
 if [ "$?" -ne 0 ]; then
-    echo "Error downloading the service file. Please check your internet connection."
+    echo "Error downloading the service file."
     exit 1
 fi
 
@@ -48,6 +69,5 @@ $SERVICE_PATH start
 echo ""
 echo "Installation completed successfully!"
 echo "The LED controller script is now active."
-echo "For customization (like changing LED names), edit the following file:"
-echo "   $SCRIPT_PATH"
-echo "Then, restart the service with the command: '/etc/init.d/internet_led restart'"
+echo "For customization (like changing LED names), edit the file: $SCRIPT_PATH"
+echo "Then, restart the service with: /etc/init.d/internet_led restart"
