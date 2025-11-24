@@ -1,0 +1,36 @@
+# Configuration مخصوص Google AC-1304
+# Usage: vi /etc/config/internet_led
+# سپس محتوای این فایل را کپی کنید
+
+config internet_led 'main'
+    option enabled '1'
+    
+    # LED های مخصوص AC-1304
+    option led_green 'led1:green'    # LED سبز اصلی
+    option led_red 'led1:amber'      # LED کهربایی/زرد
+    option led_blue 'led0:blue'      # LED آبی (اختیاری)
+    option brightness '30'           # روشنایی کمتر برای باتری
+    
+    # تنظیمات زمان‌بندی بهینه برای AC-1304
+    option sleep_interval '20'       # بررسی هر 20 ثانیه (کمتر CPU)
+    option fast_check_interval '8'   # بررسی سریع در صورت مشکل
+    option initial_delay '25'        # تأخیر بیشتر برای بوت AC-1304
+    
+    # تنظیمات Cache
+    option cache_expiry '45'         # مدت اعتبار cache بیشتر
+    option enable_cache '1'          # فعال‌سازی cache
+    
+    # تنظیمات Check
+    option ping_targets '8.8.8.8 1.1.1.1'
+    option dns_target 'google.com'
+    option captive_portal_url 'http://detectportal.firefox.com/success.txt'
+    option expected_response 'success'
+    option max_failures '3'          # حداکثر 3 بار تلاش
+    
+    # تنظیمات مخصوص AC-1304
+    option wan_interface 'wan'       # اینترفیس WAN
+    option check_ip_change '1'       # تشخیص تغییر IP
+    
+    # تنظیمات Performance
+    option cpu_limit '5'             # محدودیت CPU
+    option log_level 'info'          # سطح لاگ‌گیری
