@@ -10,10 +10,10 @@ This guide provides step-by-step instructions for installing the Internet LED Co
 ### Method 1: Direct Installation (Works on most routers)
 ```bash
 # Download and run the simple installer
-curl -L https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh | sh
+curl -L https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh | sh
 
 # Or if curl is not available, use wget:
-wget -O - https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh | sh
+wget -O - https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh | sh
 ```
 
 ### Method 2: Manual Installation
@@ -26,7 +26,7 @@ If the above method fails, follow these steps:
 
 2. **Download the installation script:**
    ```bash
-   wget -O install_simple.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh
+   wget -O install_simple.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh
    ```
 
 3. **Make it executable and run:**
@@ -71,7 +71,7 @@ If LED colors don't work correctly, you need to customize the configuration:
 1. **Detect your LED paths:**
    ```bash
    # Run the LED detection script
-   wget -O detect_leds.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/detect_leds.sh
+   wget -O detect_leds.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/detect_leds.sh
    chmod +x detect_leds.sh
    ./detect_leds.sh
    ```
@@ -129,7 +129,7 @@ logread | grep internet_led | tail -20
 tail -f /tmp/internet_led.log
 
 # Run troubleshooting tool
-wget -O troubleshoot.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/troubleshoot.sh
+wget -O troubleshoot.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/troubleshoot.sh
 chmod +x troubleshoot.sh
 ./troubleshoot.sh
 ```
@@ -206,7 +206,7 @@ rm -f /tmp/internet_led.log
 rm -f /var/run/internet_led.pid
 
 # Reinstall
-wget -O install_simple.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh
+wget -O install_simple.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh
 chmod +x install_simple.sh
 ./install_simple.sh
 ```

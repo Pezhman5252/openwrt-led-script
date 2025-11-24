@@ -5,15 +5,15 @@
 ### Quick Installation
 ```bash
 # Method 1: Direct installation (recommended)
-curl -L https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh | sh
+curl -L https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh | sh
 
 # Method 2: Download and run
-wget -O install_simple.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh
+wget -O install_simple.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh
 chmod +x install_simple.sh
 ./install_simple.sh
 
 # Method 3: One-click setup with menu
-wget -O quick_setup.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/quick_setup.sh
+wget -O quick_setup.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/quick_setup.sh
 chmod +x quick_setup.sh
 ./quick_setup.sh
 ```
@@ -27,13 +27,13 @@ ssh root@192.168.1.1
 mkdir -p /bin /etc/config
 
 # 3. Download main script
-wget -O /bin/internet_led_status.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/internet_led_status.sh
+wget -O /bin/internet_led_status.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/internet_led_status.sh
 
 # 4. Download service script
-wget -O /etc/init.d/internet_led https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/internet_led
+wget -O /etc/init.d/internet_led https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/internet_led
 
 # 5. Download configuration
-wget -O /etc/config/internet_led https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/ac1304_config_sample
+wget -O /etc/config/internet_led https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/ac1304_config_sample
 
 # 6. Set permissions
 chmod +x /bin/internet_led_status.sh
@@ -131,17 +131,17 @@ ping -c 1 -W 5 8.8.8.8     # 5 second timeout
 ### System Diagnostics
 ```bash
 # Run complete test suite
-wget -O test_installation.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/test_installation.sh
+wget -O test_installation.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/test_installation.sh
 chmod +x test_installation.sh
 ./test_installation.sh
 
 # Run troubleshooting script
-wget -O troubleshoot.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/troubleshoot.sh
+wget -O troubleshoot.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/troubleshoot.sh
 chmod +x troubleshoot.sh
 ./troubleshoot.sh
 
 # Check LED detection
-wget -O detect_leds.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/detect_leds.sh
+wget -O detect_leds.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/detect_leds.sh
 chmod +x detect_leds.sh
 ./detect_leds.sh
 ```
@@ -236,7 +236,7 @@ uci commit internet_led
 ### Complete Uninstall
 ```bash
 # Method 1: Using uninstall script
-wget -O uninstall_complete.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/uninstall_complete.sh
+wget -O uninstall_complete.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/uninstall_complete.sh
 chmod +x uninstall_complete.sh
 ./uninstall_complete.sh
 
@@ -370,7 +370,7 @@ uci commit internet_led
 # Create deployment script for multiple routers
 for router_ip in 192.168.1.1 192.168.1.2 192.168.1.3; do
     echo "Installing on $router_ip..."
-    ssh root@$router_ip "wget -O - https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh | sh"
+    ssh root@$router_ip "wget -O - https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh | sh"
 done
 ```
 

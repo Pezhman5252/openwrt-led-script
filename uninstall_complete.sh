@@ -151,7 +151,7 @@ if [ $issues -eq 0 ]; then
     echo "   ✅ LEDs turned off"
     echo ""
     echo "🚀 To reinstall in the future:"
-    echo "   curl -L https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh | sh"
+    echo "   curl -L https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh | sh"
     echo ""
     echo "ℹ️ Note: All LED colors have been reset to off"
 else
@@ -167,4 +167,4 @@ fi
 
 echo ""
 echo "🌟 Thank you for using Internet LED Controller!"
-echo "   GitHub: https://github.com/YOUR_USERNAME/openwrt-led-script"
+echo "   GitHub: https://github.com/Pezhman5252/openwrt-led-script"

@@ -23,7 +23,7 @@ This complete package contains everything needed for installation, management, t
 ### ⚡ Super Easy (Recommended):
 ```bash
 # One-click setup with interactive menu
-wget -O quick_setup.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/quick_setup.sh
+wget -O quick_setup.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/quick_setup.sh
 chmod +x quick_setup.sh
 ./quick_setup.sh
 ```
@@ -31,10 +31,10 @@ chmod +x quick_setup.sh
 ### 🚀 Direct Installation (For experienced users):
 ```bash
 # Direct installation
-curl -L https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh | sh
+curl -L https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh | sh
 
 # Or download and run
-wget -O install_simple.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh
+wget -O install_simple.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh
 chmod +x install_simple.sh
 ./install_simple.sh
 ```
@@ -42,14 +42,14 @@ chmod +x install_simple.sh
 ### For other router models:
 1. Run LED detection first:
    ```bash
-   wget -O detect_leds.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/detect_leds.sh
+   wget -O detect_leds.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/detect_leds.sh
    chmod +x detect_leds.sh
    ./detect_leds.sh
    ```
 
 2. Install the main script:
    ```bash
-   wget -O install_simple.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/install_simple.sh
+   wget -O install_simple.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh
    chmod +x install_simple.sh
    ./install_simple.sh
    ```
@@ -104,7 +104,7 @@ logread | grep internet_led
 To completely remove the service:
 ```bash
 # Run the complete uninstaller
-wget -O uninstall_complete.sh https://raw.githubusercontent.com/YOUR_USERNAME/openwrt-led-script/main/uninstall_complete.sh
+wget -O uninstall_complete.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/uninstall_complete.sh
 chmod +x uninstall_complete.sh
 ./uninstall_complete.sh
 ```

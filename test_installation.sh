@@ -62,13 +62,8 @@ echo ""
 # Test 3: File Existence
 echo -e "${YELLOW}3️⃣ File System Test${NC}"
 echo "====================="
-files_to_check=(
-    "/etc/init.d/internet_led"
-    "/bin/internet_led_status.sh" 
-    "/etc/config/internet_led"
-)
 
-for file in "${files_to_check[@]}"; do
+for file in "/etc/init.d/internet_led" "/bin/internet_led_status.sh" "/etc/config/internet_led"; do
     if [ -f "$file" ]; then
         test_result "pass" "File exists: $file"
     else
@@ -92,13 +87,8 @@ echo ""
 # Test 5: LED Paths
 echo -e "${YELLOW}5️⃣ LED Configuration Test${NC}"
 echo "==========================="
-led_paths=(
-    "/sys/class/leds/led1:green/brightness"
-    "/sys/class/leds/led1:amber/brightness"
-    "/sys/class/leds/led0:blue/brightness"
-)
 
-for led_path in "${led_paths[@]}"; do
+for led_path in "/sys/class/leds/led1:green/brightness" "/sys/class/leds/led1:amber/brightness" "/sys/class/leds/led0:blue/brightness"; do
     if [ -f "$led_path" ]; then
         test_result "pass" "LED path exists: $led_path"
         # Test if we can write to it
