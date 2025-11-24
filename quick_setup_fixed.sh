@@ -1,7 +1,7 @@
 #!/bin/sh
-# Internet LED Controller - Quick Setup Script (Fixed Version)
+# Internet LED Controller - Quick Setup Script
 # One-click installation with automatic LED detection
-# Version: 7.1 - Fixed
+# Version: 7.1
 # Author: MiniMax Agent
 
 set -e
@@ -29,31 +29,6 @@ show_menu() {
     echo "   6️⃣  Exit"
     echo ""
     echo -n "Choose option (1-6): "
-}
-
-# Download helper function
-download_file() {
-    local url="$1"
-    local output="$2"
-    local description="$3"
-    
-    echo "📥 Downloading $description..."
-    if command -v wget >/dev/null 2>&1; then
-        wget -O "$output" "$url" 2>/dev/null
-    elif command -v curl >/dev/null 2>&1; then
-        curl -L -o "$output" "$url" 2>/dev/null
-    else
-        echo "❌ Neither wget nor curl is available"
-        return 1
-    fi
-    
-    if [ $? -eq 0 ]; then
-        echo "   ✅ Downloaded successfully"
-        return 0
-    else
-        echo "   ❌ Download failed"
-        return 1
-    fi
 }
 
 # Automatic setup function
@@ -86,20 +61,28 @@ automatic_setup() {
     echo ""
     echo "🚀 Installing Internet LED Controller..."
     
-    # Check if we have the installer script locally
+    # Check if install_simple.sh exists, if not download it
     if [ ! -f "./install_simple.sh" ]; then
-        echo "📥 Downloading installer from GitHub..."
-        base_url="https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main"
-        if ! download_file "$base_url/install_simple.sh" "./install_simple.sh" "installer"; then
-            echo "❌ Failed to download installer. Please check your internet connection."
+        echo "📥 Downloading install_simple.sh..."
+        if command -v wget >/dev/null 2>&1; then
+            wget -q -O install_simple.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh
+        elif command -v curl >/dev/null 2>&1; then
+            curl -s -L -o install_simple.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/install_simple.sh
+        else
+            echo "❌ Neither wget nor curl available. Please download install_simple.sh manually."
+            return 1
+        fi
+        
+        if [ ! -f "./install_simple.sh" ]; then
+            echo "❌ Failed to download install_simple.sh"
             return 1
         fi
     fi
     
+    # Run the main installer
     chmod +x ./install_simple.sh
-    echo "🔧 Running installer..."
     if ! ./install_simple.sh; then
-        echo "❌ Installation failed. Please check the logs above."
+        echo "❌ Installation failed. Check the logs above."
         return 1
     fi
     
@@ -107,14 +90,27 @@ automatic_setup() {
     echo "🧪 Testing installation..."
     sleep 3
     
-    # Run tests if available
+    # Check if test_installation.sh exists, if not download it
+    if [ ! -f "./test_installation.sh" ]; then
+        echo "📥 Downloading test_installation.sh..."
+        if command -v wget >/dev/null 2>&1; then
+            wget -q -O test_installation.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/test_installation.sh
+        elif command -v curl >/dev/null 2>&1; then
+            curl -s -L -o test_installation.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/test_installation.sh
+        fi
+    fi
+    
+    # Run tests
     if [ -f "./test_installation.sh" ]; then
         chmod +x ./test_installation.sh
         ./test_installation.sh
     else
-        echo "📋 Running basic tests..."
-        echo "   Service status: $(/etc/init.d/internet_led status 2>/dev/null || echo 'Not running')"
-        echo "   Process check: $(ps | grep -v grep | grep internet_led_status.sh >/dev/null && echo 'Running' || echo 'Not found')"
+        echo "📋 Running basic test..."
+        if /etc/init.d/internet_led status >/dev/null 2>&1; then
+            echo "✅ Service is running"
+        else
+            echo "❌ Service failed to start"
+        fi
     fi
 }
 
@@ -140,7 +136,7 @@ manual_config() {
     done
     
     if [ "$leds_found" -eq 0 ]; then
-        echo "❌ No LED interfaces found. Manual configuration requires LED interfaces."
+        echo "❌ No LED interfaces found"
         return 1
     fi
     
@@ -201,6 +197,8 @@ EOF
         echo "⚠️  Service restart failed. Starting manually..."
         /bin/sh /bin/internet_led_status.sh &
     fi
+    
+    echo "✅ Manual configuration completed"
 }
 
 # Test current installation
@@ -209,6 +207,16 @@ test_installation() {
     echo "==============================="
     echo ""
     
+    # Check if test_installation.sh exists, if not download it
+    if [ ! -f "./test_installation.sh" ]; then
+        echo "📥 Downloading test_installation.sh..."
+        if command -v wget >/dev/null 2>&1; then
+            wget -q -O test_installation.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/test_installation.sh
+        elif command -v curl >/dev/null 2>&1; then
+            curl -s -L -o test_installation.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/test_installation.sh
+        fi
+    fi
+    
     if [ -f "./test_installation.sh" ]; then
         echo "🧪 Running comprehensive test suite..."
         chmod +x ./test_installation.sh
@@ -216,7 +224,7 @@ test_installation() {
     else
         echo "📋 Running basic tests..."
         
-        # Test 1: Service status
+        # Service status
         echo ""
         echo "1️⃣ Service Status:"
         if /etc/init.d/internet_led status >/dev/null 2>&1; then
@@ -225,54 +233,26 @@ test_installation() {
             echo "   ❌ Service is not running"
         fi
         
-        # Test 2: Process check
+        # Process check
         echo ""
         echo "2️⃣ Process Check:"
         if ps | grep -v grep | grep internet_led_status.sh >/dev/null; then
-            echo "   ✅ Main script process is running"
+            echo "   ✅ Main script is running"
         else
-            echo "   ❌ Main script process not found"
+            echo "   ❌ Main script not found"
         fi
         
-        # Test 3: LED paths
+        # LED test
         echo ""
-        echo "3️⃣ LED Configuration:"
-        if [ -f "/etc/config/internet_led" ]; then
-            echo "   ✅ Configuration file exists"
-            led_green=$(grep "led_green" /etc/config/internet_led | cut -d"'" -f4)
-            led_red=$(grep "led_red" /etc/config/internet_led | cut -d"'" -f4)
-            led_blue=$(grep "led_blue" /etc/config/internet_led | cut -d"'" -f4)
-            
-            [ -f "$led_green" ] && echo "   ✅ Green LED: $led_green" || echo "   ❌ Green LED path invalid"
-            [ -f "$led_red" ] && echo "   ✅ Red LED: $led_red" || echo "   ❌ Red LED path invalid"
-            [ -f "$led_blue" ] && echo "   ✅ Blue LED: $led_blue" || echo "   ⚠️ Blue LED path invalid"
-        else
-            echo "   ❌ Configuration file not found"
-        fi
-        
-        # Test 4: Internet connectivity
-        echo ""
-        echo "4️⃣ Internet Connectivity:"
-        if ping -c 1 -W 3 8.8.8.8 >/dev/null 2>&1; then
-            echo "   ✅ Internet connectivity is working"
-        else
-            echo "   ❌ No internet connectivity"
-        fi
-        
-        # Test 5: LED functionality
-        echo ""
-        echo "5️⃣ LED Test:"
-        if [ -f "/sys/class/leds/led1:green/brightness" ]; then
-            echo "   Testing green LED..."
-            echo 255 > /sys/class/leds/led1:green/brightness 2>/dev/null && echo "   ✅ Green LED works" || echo "   ❌ Green LED control failed"
-            echo 0 > /sys/class/leds/led1:green/brightness 2>/dev/null
-        fi
-        
-        if [ -f "/sys/class/leds/led1:amber/brightness" ]; then
-            echo "   Testing amber LED..."
-            echo 255 > /sys/class/leds/led1:amber/brightness 2>/dev/null && echo "   ✅ Amber LED works" || echo "   ❌ Amber LED control failed"
-            echo 0 > /sys/class/leds/led1:amber/brightness 2>/dev/null
-        fi
+        echo "3️⃣ LED Test:"
+        for led in /sys/class/leds/*/brightness; do
+            if [ -f "$led" ]; then
+                led_name=$(dirname "$led")
+                echo "   Testing $led_name..."
+                echo 255 > "$led" 2>/dev/null && echo "   ✅ $led_name works" || echo "   ❌ $led_name control failed"
+                echo 0 > "$led" 2>/dev/null
+            fi
+        done
     fi
 }
 
@@ -289,26 +269,31 @@ uninstall() {
     read -r response
     
     if [ "$response" = "yes" ]; then
+        # Check if uninstall_complete.sh exists, if not download it
+        if [ ! -f "./uninstall_complete.sh" ]; then
+            echo "📥 Downloading uninstall_complete.sh..."
+            if command -v wget >/dev/null 2>&1; then
+                wget -q -O uninstall_complete.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/uninstall_complete.sh
+            elif command -v curl >/dev/null 2>&1; then
+                curl -s -L -o uninstall_complete.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/uninstall_complete.sh
+            fi
+        fi
+        
         if [ -f "./uninstall_complete.sh" ]; then
             echo "🗑️ Running complete uninstaller..."
             chmod +x ./uninstall_complete.sh
             ./uninstall_complete.sh
         else
-            echo "📥 Download uninstaller from GitHub..."
-            base_url="https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main"
-            if download_file "$base_url/uninstall_complete.sh" "./uninstall_complete.sh" "uninstaller"; then
-                chmod +x ./uninstall_complete.sh
-                ./uninstall_complete.sh
-            else
-                echo "❌ Failed to download uninstaller"
-                echo ""
-                echo "🔧 Manual uninstall commands:"
-                echo "   /etc/init.d/internet_led stop"
-                echo "   /etc/init.d/internet_led disable"
-                echo "   rm -f /etc/init.d/internet_led /bin/internet_led_status.sh /etc/config/internet_led"
-                echo "   rm -f /tmp/internet_led.log /var/run/internet_led.pid"
-                echo "   killall -9 internet_led_status.sh 2>/dev/null"
-            fi
+            echo "❌ uninstall_complete.sh not found and could not be downloaded"
+            echo ""
+            echo "🔧 Manual uninstall commands:"
+            echo "   /etc/init.d/internet_led stop"
+            echo "   /etc/init.d/internet_led disable"
+            echo "   rm -f /etc/init.d/internet_led /bin/internet_led_status.sh /etc/config/internet_led"
+            echo "   rm -f /tmp/internet_led.log /var/run/internet_led.pid"
+            echo "   killall -9 internet_led_status.sh 2>/dev/null"
+            echo ""
+            echo "⚠️  Run these commands manually to complete uninstallation"
         fi
     else
         echo "❌ Uninstall cancelled"
@@ -321,18 +306,29 @@ run_diagnostics() {
     echo "===================="
     echo ""
     
+    # Check if troubleshoot.sh exists, if not download it
+    if [ ! -f "./troubleshoot.sh" ]; then
+        echo "📥 Downloading troubleshoot.sh..."
+        if command -v wget >/dev/null 2>&1; then
+            wget -q -O troubleshoot.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/troubleshoot.sh
+        elif command -v curl >/dev/null 2>&1; then
+            curl -s -L -o troubleshoot.sh https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main/troubleshoot.sh
+        fi
+    fi
+    
     if [ -f "./troubleshoot.sh" ]; then
         echo "🩺 Running comprehensive diagnostics..."
         chmod +x ./troubleshoot.sh
         ./troubleshoot.sh
     else
         echo "📋 Running basic diagnostics..."
-        base_url="https://raw.githubusercontent.com/Pezhman5252/openwrt-led-script/main"
         
+        # Service status
         echo ""
         echo "1️⃣ Service Status:"
         /etc/init.d/internet_led status 2>/dev/null || echo "   ❌ Service not running or not installed"
         
+        # Process check
         echo ""
         echo "2️⃣ Process Check:"
         if ps | grep -v grep | grep internet_led_status.sh >/dev/null; then
@@ -341,27 +337,30 @@ run_diagnostics() {
             echo "   ❌ Main script is not running"
         fi
         
+        # LED paths
         echo ""
         echo "3️⃣ LED Paths Check:"
         echo "   Looking for LED interfaces..."
-        ls /sys/class/leds/ 2>/dev/null | while read led; do
-            echo "   📍 $led"
-        done
+        if ls /sys/class/leds/ >/dev/null 2>&1; then
+            ls /sys/class/leds/ | while read led; do
+                echo "   📍 $led"
+            done
+        else
+            echo "   ❌ No LED interfaces found"
+        fi
         
+        # Internet connectivity
         echo ""
-        echo "4️⃣ Network Connectivity Test:"
+        echo "4️⃣ Internet Connectivity:"
         if ping -c 3 -W 3 8.8.8.8 >/dev/null 2>&1; then
             echo "   ✅ Internet connectivity OK"
         else
             echo "   ❌ No internet connectivity"
         fi
         
+        # System resources
         echo ""
-        echo "5️⃣ Recent Errors:"
-        logread | grep internet_led | tail -5 2>/dev/null || echo "   No recent entries in system log"
-        
-        echo ""
-        echo "6️⃣ System Resources:"
+        echo "5️⃣ System Resources:"
         free -m | grep Mem | awk '{print "   Memory usage: " $3 "/" $2 " MB"}'
         uptime | awk '{print "   Uptime: " $3 " " $4 " " $5}'
         
@@ -370,19 +369,6 @@ run_diagnostics() {
         echo "   Restart service:     /etc/init.d/internet_led restart"
         echo "   View logs:          logread | grep internet_led"
         echo "   Check config:       cat /etc/config/internet_led"
-        
-        # Offer to download troubleshooter
-        echo ""
-        echo -n "Would you like to download the full troubleshooting tool? (y/N): "
-        read -r response
-        if [ "$response" = "y" ] || [ "$response" = "Y" ]; then
-            if download_file "$base_url/troubleshoot.sh" "./troubleshoot.sh" "troubleshooting tool"; then
-                chmod +x ./troubleshoot.sh
-                echo ""
-                echo "🩺 Running full diagnostics..."
-                ./troubleshoot.sh
-            fi
-        fi
     fi
 }
 
